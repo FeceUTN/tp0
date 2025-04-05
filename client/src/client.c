@@ -7,8 +7,8 @@ int main(void)
 	int conexion;
 	char* ip;
 	char* puerto;
-	char* valor;
-
+    char* valor;
+	
 	t_log* logger;
 	t_config* config;
 
@@ -16,6 +16,7 @@ int main(void)
 
 	logger = iniciar_logger();
 
+	log_info(logger, "Hola! Soy un log");
 	// Usando el logger creado previamente
 	// Escribi: "Hola! Soy un log"
 
@@ -26,9 +27,10 @@ int main(void)
 
 	// Usando el config creado previamente, leemos los valores del config y los 
 	// dejamos en las variables 'ip', 'puerto' y 'valor'
+	valor = config_get_string_value(config, "CLAVE");
 
 	// Loggeamos el valor de config
-
+	log_info(logger,"%s", valor);
 
 	/* ---------------- LEER DE CONSOLA ---------------- */
 
@@ -46,6 +48,9 @@ int main(void)
 	// Armamos y enviamos el paquete
 	paquete(conexion);
 
+	// Destruimos todo
+	log_destroy(logger);
+	config_destroy(config);
 	terminar_programa(conexion, logger, config);
 
 	/*---------------------------------------------------PARTE 5-------------------------------------------------------------*/
@@ -54,15 +59,22 @@ int main(void)
 
 t_log* iniciar_logger(void)
 {
-	t_log* nuevo_logger;
-
+	// Se crea el logger en el archivo pedido a nivel INFO 
+	t_log* nuevo_logger = log_create("tp0.log", "Saludo", true, LOG_LEVEL_INFO);
+	if(nuevo_logger == NULL){ //Verificamos que se inicie el log
+		perror("Error: log no creado");
+		abort();
+	}
 	return nuevo_logger;
 }
 
 t_config* iniciar_config(void)
 {
-	t_config* nuevo_config;
-
+	t_config* nuevo_config = config_create("cliente.config");
+	if (nuevo_config == NULL){ // Verificamos que cargue el archivo
+		perror("Error: configuracion no encontrada");
+		abort();
+	}
 	return nuevo_config;
 }
 
