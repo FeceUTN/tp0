@@ -13,13 +13,20 @@ int iniciar_servidor(void)
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
 
-	getaddrinfo(NULL, PUERTO, &hints, &servinfo);
+	socket_servidor = getaddrinfo(NULL, PUERTO, &hints, &servinfo);
 
-	// Creamos el socket de escucha del servidor
+	// Creamos el socket de escucha del servidor socket()
 
-	// Asociamos el socket a un puerto
+	int fd_escucha = socket(server_info->ai_family,
+							server_info->ai_socktype,
+							server_info->ai_protocol);
+						
+	// Asociamos el socket a un puerto bind()
+	socket_servidor = setsockopt(fd_escucha, SOL_SOCKET, SO_REUSEPORT, &(int){1}, sizeof(int));
+	socket_servidor = bind (fd_escucha, servinfo->ai_addr, servinfo->ai_addrlen);
 
-	// Escuchamos las conexiones entrantes
+	// Escuchamos las conexiones entrantes listen()
+	socket_servidor = listen(fd_escucha, SOMAXCONN);
 
 	freeaddrinfo(servinfo);
 	log_trace(logger, "Listo para escuchar a mi cliente");
@@ -30,36 +37,36 @@ int iniciar_servidor(void)
 int esperar_cliente(int socket_servidor)
 {
 	// Aceptamos un nuevo cliente
-	int socket_cliente;
+	int socket_cliente = accept(socket_servidor, NULL, NULL);
 	log_info(logger, "Se conecto un cliente!");
 
 	return socket_cliente;
 }
 
-int recibir_operacion(int socket_cliente)
+void checkeoHandshake(int handshake, int socket_cliente){
+	int handshake = recibir_operacion(socket_cliente);
+	int handshake_ok = 0;
+	int handshake_error = -1;
+
+	if (handshake == handshake_error){
+		log_error(logger, "El protocolo no es el esperado. Intenalo de nuevo");
+		send(socket_cliente, &handshake_error, sizeof(int), 0);
+		handshake = recibir_operacion(socket_cliente);	
+	}else if(handshake == handshake_ok){
+		log_info(logger, "Handshake correcto. El cliente es el esperado.");
+		send(socket_cliente, &handshake_ok, sizeof(int), 0);
+	}		
+}
+
+int recibir_operacion(int socket_cliente) 
 {
 	int cod_op;
 	if(recv(socket_cliente, &cod_op, sizeof(int), MSG_WAITALL) > 0)
 		return cod_op;
 	else
 	{
-		close(socket_cliente);
+		close(socket_cliente); 
 		return -1;
-	}
-}
-
-char* checkeoHandshake(int socket_cliente)
-{
-	int resultado = recibir_operacion(socket_cliente);
-	int handshake_ok = 0;
-	int handshake_error = -1;
-
-	if(resultado == handshake_error){
-		send(socket_cliente, &handshake_error, sizeof(int), 0);
-		return "El protocolo no es el esperado";
-	}else if(resultado = handshake_ok){
-		send(socket_cliente, &handshake_ok, sizeof(int),0);
-		return "Handshake correcto";
 	}
 }
 
