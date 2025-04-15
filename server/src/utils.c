@@ -17,9 +17,9 @@ int iniciar_servidor(void)
 
 	// Creamos el socket de escucha del servidor socket()
 
-	int fd_escucha = socket(server_info->ai_family,
-							server_info->ai_socktype,
-							server_info->ai_protocol);
+	int fd_escucha = socket(servinfo->ai_family,
+							servinfo->ai_socktype,
+							servinfo->ai_protocol);
 						
 	// Asociamos el socket a un puerto bind()
 	socket_servidor = setsockopt(fd_escucha, SOL_SOCKET, SO_REUSEPORT, &(int){1}, sizeof(int));
@@ -43,19 +43,19 @@ int esperar_cliente(int socket_servidor)
 	return socket_cliente;
 }
 
-void checkeoHandshake(int handshake, int socket_cliente){
+char* checkeoHandshake(int socket_cliente){
 	int handshake = recibir_operacion(socket_cliente);
 	int handshake_ok = 0;
 	int handshake_error = -1;
 
 	if (handshake == handshake_error){
-		log_error(logger, "El protocolo no es el esperado. Intenalo de nuevo");
 		send(socket_cliente, &handshake_error, sizeof(int), 0);
-		handshake = recibir_operacion(socket_cliente);	
+		return "El protocolo no es el esperado. Intenalo de nuevo";
 	}else if(handshake == handshake_ok){
-		log_info(logger, "Handshake correcto. El cliente es el esperado.");
 		send(socket_cliente, &handshake_ok, sizeof(int), 0);
-	}		
+		return "Handshake correcto. El cliente es el esperado.";
+	}
+	return "Error inesperado";		
 }
 
 int recibir_operacion(int socket_cliente) 

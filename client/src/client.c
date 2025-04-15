@@ -8,7 +8,7 @@ int main(void)
 	char* ip;
 	char* puerto;
     char* valor;
-	char* handshake;
+	char* resHandshake;
 
 	t_log* logger;
 	t_config* config;
@@ -45,8 +45,8 @@ int main(void)
 
 	// Creamos una conexión hacia el servidor
 	conexion = crear_conexion(ip, puerto);
-	handshake = handshake(conexion); // Realizamos el handshake con el servidor
-	log_info(logger, "%s", mensaje);
+	resHandshake = handshake(conexion); // Realizamos el handshake con el servidor
+	log_info(logger, "%s", resHandshake);
 	
 	// Enviamos al servidor el valor de CLAVE como mensaje
 	enviar_mensaje(valor, conexion);
@@ -103,10 +103,10 @@ void paquete(int conexion)
 	t_paquete* paquete = crear_paquete();
 
 	// Leemos y esta vez agregamos las lineas al paquete
-	leido = msjConsola = readline("> ");
+	leido = readline("> ");
 	while(strcmp(leido, "") != 0){
 		agregar_a_paquete(paquete, leido, strlen(leido)+1);
-		msjConsola = readline("> ");
+		leido = readline("> ");
 	}
 
 	enviar_paquete(paquete, conexion);
