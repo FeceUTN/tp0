@@ -48,17 +48,17 @@ int recibir_operacion(int socket_cliente)
 	}
 }
 
-char* checkeoHandshake(socket_cliente)
+char* checkeoHandshake(int socket_cliente)
 {
-	int resultado = recibir_operacion(socket_cliente)
+	int resultado = recibir_operacion(socket_cliente);
 	int handshake_ok = 0;
 	int handshake_error = -1;
 
-	if(handshake == hanshake_error){
-		send(socket_cliente, &handshake_error, sizeof(int), 0)
+	if(resultado == handshake_error){
+		send(socket_cliente, &handshake_error, sizeof(int), 0);
 		return "El protocolo no es el esperado";
-	}else if(handshake = handshake_ok){
-		send(socket_cliente, &handshake_ok, sizeof(int),0)
+	}else if(resultado = handshake_ok){
+		send(socket_cliente, &handshake_ok, sizeof(int),0);
 		return "Handshake correcto";
 	}
 }

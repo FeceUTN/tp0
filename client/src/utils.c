@@ -26,7 +26,7 @@ int crear_conexion(char *ip, char* puerto)
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 
-	err = getaddrinfo(ip, puerto, &hints, &server_info);
+	getaddrinfo(ip, puerto, &hints, &server_info);
 
 	// Ahora vamos a crear el socket.
 	int socket_cliente = socket(server_info->ai_family,
