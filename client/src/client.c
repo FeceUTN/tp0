@@ -8,7 +8,8 @@ int main(void)
 	char* ip;
 	char* puerto;
     char* valor;
-	
+	char* handshake;
+
 	t_log* logger;
 	t_config* config;
 
@@ -44,8 +45,9 @@ int main(void)
 
 	// Creamos una conexión hacia el servidor
 	conexion = crear_conexion(ip, puerto);
-	handshake(conexion); // Realizamos el handshake con el servidor
-
+	handshake = handshake(conexion); // Realizamos el handshake con el servidor
+	log_info(logger, "%s", mensaje);
+	
 	// Enviamos al servidor el valor de CLAVE como mensaje
 	enviar_mensaje(valor, conexion);
 

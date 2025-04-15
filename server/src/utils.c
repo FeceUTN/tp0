@@ -4,9 +4,6 @@ t_log* logger;
 
 int iniciar_servidor(void)
 {
-	// Quitar esta línea cuando hayamos terminado de implementar la funcion
-	assert(!"no implementado!");
-
 	int socket_servidor;
 
 	struct addrinfo hints, *servinfo, *p;
@@ -32,9 +29,6 @@ int iniciar_servidor(void)
 
 int esperar_cliente(int socket_servidor)
 {
-	// Quitar esta línea cuando hayamos terminado de implementar la funcion
-	assert(!"no implementado!");
-
 	// Aceptamos un nuevo cliente
 	int socket_cliente;
 	log_info(logger, "Se conecto un cliente!");
@@ -51,6 +45,21 @@ int recibir_operacion(int socket_cliente)
 	{
 		close(socket_cliente);
 		return -1;
+	}
+}
+
+char* checkeoHandshake(socket_cliente)
+{
+	int resultado = recibir_operacion(socket_cliente)
+	int handshake_ok = 0;
+	int handshake_error = -1;
+
+	if(handshake == hanshake_error){
+		send(socket_cliente, &handshake_error, sizeof(int), 0)
+		return "El protocolo no es el esperado";
+	}else if(handshake = handshake_ok){
+		send(socket_cliente, &handshake_ok, sizeof(int),0)
+		return "Handshake correcto";
 	}
 }
 

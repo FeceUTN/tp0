@@ -18,6 +18,7 @@ void* serializar_paquete(t_paquete* paquete, int bytes)
 
 int crear_conexion(char *ip, char* puerto)
 {
+	int err;
 	struct addrinfo hints;
 	struct addrinfo *server_info;
 
@@ -25,7 +26,7 @@ int crear_conexion(char *ip, char* puerto)
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 
-	socket_cliente = getaddrinfo(ip, puerto, &hints, &server_info);
+	err = getaddrinfo(ip, puerto, &hints, &server_info);
 
 	// Ahora vamos a crear el socket.
 	int socket_cliente = socket(server_info->ai_family,
@@ -57,7 +58,7 @@ void enviar_mensaje(char* mensaje, int socket_cliente)
 	send(socket_cliente, a_enviar, bytes, 0);
 
 	free(a_enviar);
-	(paquete);
+	eliminar_paquete(paquete);
 }
 
 
@@ -96,24 +97,26 @@ void enviar_paquete(t_paquete* paquete, int socket_cliente)
 	free(a_enviar);
 }
 
-void handshake(int socket_cliente)
+char* handshake(int socket_cliente)
 {
 	int operacion = 1;
 	int resultado;
+	char* mensaje;
 	send(socket_cliente, &operacion, sizeof(int), 0);
 	recv(socket_cliente, &resultado, sizeof(int), MSG_WAITALL);
 
 	switch(resultado){
 		case -1:
-			log_error(logger, "Protocolo equivocado, intentar nuevamente.");
+			mensaje = "Protocolo equivocado, intentar nuevamente.";
 			break;
 		case 0:
-			log_info(logger, "Protocolo correcto, cliente habilitado.");
+			mensaje = "Protocolo correcto, cliente habilitado.";
 			break;
-		case DEFAULT:
-			log_error(logger, "Error desconocido del servidor");
+		default:
+			mensaje = "Error desconocido del servidor";
 			break;
 	}
+	return mensaje;
 }
 void eliminar_paquete(t_paquete* paquete)
 {

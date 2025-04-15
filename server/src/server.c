@@ -2,13 +2,14 @@
 
 int main(void) {
 	logger = log_create("log.log", "Servidor", 1, LOG_LEVEL_DEBUG);
-
+	char* handshake;
 	int server_fd = iniciar_servidor();
 	log_info(logger, "Servidor listo para recibir al cliente");
 	int cliente_fd = esperar_cliente(server_fd);
 	
-	checkeoHandshake(cliente_fd);  //Controla el protocolo del cliente
-	
+	handshake = checkeoHandshake(cliente_fd);  //Controla el protocolo del cliente
+	log_info(logger, "%s", handshake);
+
 	t_list* lista;
 	while (1) {
 		int cod_op = recibir_operacion(cliente_fd);
