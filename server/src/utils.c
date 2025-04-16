@@ -4,8 +4,6 @@ t_log* logger;
 
 int iniciar_servidor(void)
 {
-	int socket_servidor;
-
 	struct addrinfo hints, *servinfo, *p;
 
 	memset(&hints, 0, sizeof(hints));
@@ -13,7 +11,7 @@ int iniciar_servidor(void)
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
 
-	socket_servidor = getaddrinfo(NULL, PUERTO, &hints, &servinfo);
+	getaddrinfo(NULL, PUERTO, &hints, &servinfo);
 
 	// Creamos el socket de escucha del servidor socket()
 
@@ -22,16 +20,16 @@ int iniciar_servidor(void)
 							servinfo->ai_protocol);
 						
 	// Asociamos el socket a un puerto bind()
-	socket_servidor = setsockopt(fd_escucha, SOL_SOCKET, SO_REUSEPORT, &(int){1}, sizeof(int));
-	socket_servidor = bind (fd_escucha, servinfo->ai_addr, servinfo->ai_addrlen);
+	setsockopt(fd_escucha, SOL_SOCKET, SO_REUSEPORT, &(int){1}, sizeof(int));
+	bind (fd_escucha, servinfo->ai_addr, servinfo->ai_addrlen);
 
 	// Escuchamos las conexiones entrantes listen()
-	socket_servidor = listen(fd_escucha, SOMAXCONN);
+	listen(fd_escucha, SOMAXCONN);
 
 	freeaddrinfo(servinfo);
 	log_trace(logger, "Listo para escuchar a mi cliente");
 
-	return socket_servidor;
+	return fd_escucha;
 }
 
 int esperar_cliente(int socket_servidor)
@@ -51,7 +49,7 @@ char* checkeoHandshake(int socket_cliente){
 	if (handshake == handshake_error){
 		send(socket_cliente, &handshake_error, sizeof(int), 0);
 		return "El protocolo no es el esperado. Intenalo de nuevo";
-	}else if(handshake == handshake_ok){
+	}else{
 		send(socket_cliente, &handshake_ok, sizeof(int), 0);
 		return "Handshake correcto. El cliente es el esperado.";
 	}
